@@ -1,4 +1,5 @@
 require 'eventmachine'
+require 'em/protocols/line_protocol'
 require 'em-handlersocket/client'
 
 module EventMachine

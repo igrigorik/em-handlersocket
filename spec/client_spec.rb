@@ -20,4 +20,22 @@ describe EventMachine::HandlerSocket do
     }
   end
 
+  it "should open an index" do
+    EM.run {
+      c = EM::HandlerSocket.new
+
+      df = c.execute(['P', '0', 'widgets', 'user', 'PRIMARY', 'user_name,user_email,created'])
+
+      df.callback {|data|
+        p data
+
+        df = c.execute(['0', '=',  '1', '1'])
+        df.callback { |data|
+          p data
+          EM.stop
+        }
+      }
+    }
+  end
+
 end
