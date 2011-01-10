@@ -18,12 +18,17 @@ module EventMachine
         add_deferrable(&blk)
       end
 
+      def open_index(opts)
+        execute(['P', opts[:id], opts[:database], opts[:table], opts[:index_name], opts[:columns]])
+      end
+
+      # def query(*q)
+      # end
 
       private
 
         def send(data)
-          p [:sending, data.join("\t")]
-          send_data data.join("\t")+"\n"
+          send_data data.join("\t") + "\n"
         end
 
         def receive_line(line)
