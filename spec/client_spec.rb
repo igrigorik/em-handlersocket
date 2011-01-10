@@ -1,5 +1,19 @@
 require 'helper'
 
+#
+# create database widgets;
+# CREATE TABLE user (
+#   user_id INT UNSIGNED PRIMARY KEY,
+#   user_name VARCHAR(50),
+#   user_email VARCHAR(255),
+#   created DATETIME
+# ) ENGINE=InnoDB;
+#
+# insert into user (user_id, user_name, user_email, created) values (1, 'Ilya', 'ilya@igvita.com', '2010-01-01');
+# insert into user (user_id, user_name, user_email, created) values (2, 'John', 'john@example.com', '2010-01-02');
+# insert into user (user_id, user_name, user_email, created) values (3, 'Bob', 'bob@example.com', '2010-01-03');
+#
+
 describe EventMachine::HandlerSocket do
 
   it "should connect to HandlerSocket server" do
