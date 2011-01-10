@@ -11,4 +11,13 @@ describe EventMachine::HandlerSocket do
     }
   end
 
+  it "should connect to localhost, read-only port by default" do
+    EM.run {
+      c = EM::HandlerSocket.new
+      c.class.should == EventMachine::HandlerSocket::Client
+
+      EM.stop
+    }
+  end
+
 end
