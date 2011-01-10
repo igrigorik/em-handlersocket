@@ -19,16 +19,19 @@ module EventMachine
       end
 
       def open_index(opts)
-        execute(['P', opts[:id], opts[:database], opts[:table], opts[:index_name], opts[:columns]])
+        execute(['P', opts[:id], opts[:db], opts[:table], opts[:index_name], opts[:columns]])
       end
 
-      # def query(*q)
-      # end
+      def query(*queries)
+        queries = queries.map{|q| [q[:id], q[:op], 1, q[:key], q[:limit], q[:offset]].compact.join("\t") }.join("\n")
+        execute(queries)
+      end
 
       private
 
         def send(data)
-          send_data data.join("\t") + "\n"
+          data = data.is_a?(String) ? data : data.join("\t") + "\n"
+          send_data data
         end
 
         def receive_line(line)

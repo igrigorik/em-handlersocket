@@ -26,7 +26,7 @@ describe EventMachine::HandlerSocket do
 
       df = c.execute(['P', '0', 'widgets', 'user', 'PRIMARY', 'user_name,user_email,created'])
       df.callback {|r|
-        r.should == ["0", "1"]
+        r.should == ['0', '1']
         EM.stop
       }
     }
@@ -35,25 +35,50 @@ describe EventMachine::HandlerSocket do
   it "should open an index" do
     EM.run {
       c = EM::HandlerSocket.new
-      d = c.open_index({
-                         :id => 0,
-                         :db => 'widgets',
-                         :table => 'user',
-                         :index_name => 'PRIMARY',
-                         :columns => 'user_name,user_email,created'
-      })
+      idx = {:id => 0, :db => 'widgets', :table => 'user', :index_name => 'PRIMARY', :columns => 'user_name'}
 
+      d = c.open_index(idx)
       d.callback do
         EM.stop
       end
     }
-
-    # df = c.execute(['0', '=',  '1', '1'])
-    # df.callback { |data|
-    #   p data
-    #   EM.stop
-    # }
-
-
   end
+
+  it "should fetch a single record" do
+    EM.run {
+      c = EM::HandlerSocket.new
+      idx = {:id => 0, :db => 'widgets', :table => 'user', :index_name => 'PRIMARY', :columns => 'user_name'}
+
+      d = c.open_index(idx)
+      d.callback do |s|
+
+        d = c.query(:id => 0, :op => '=', :key => '1')
+        d.callback do |data|
+          data.last.should == 'Ilya'
+          EM.stop
+        end
+      end
+    }
+  end
+
+  it "should fetch multiple records" do
+    pending("trickier one.. response is returned on multiple lines, requires DF accounting")
+
+    EM.run {
+      c = EM::HandlerSocket.new
+      idx = {:id => 0, :db => 'widgets', :table => 'user', :index_name => 'PRIMARY', :columns => 'user_name'}
+
+      d = c.open_index(idx)
+      d.callback do |s|
+
+        d = c.query({:id => 0, :op => '=', :key => '1'}, {:id => 0, :op => '=', :key => '2'})
+        d.callback do |data|
+          p data
+          EM.stop
+        end
+      end
+    }
+  end
+
+
 end
