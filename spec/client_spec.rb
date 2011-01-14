@@ -101,4 +101,22 @@ describe EventMachine::HandlerSocket do
     }
   end
 
+  it "should execute a query against a composite index" do
+    EM.run {
+      c = EM::HandlerSocket.new
+      idx = {:id => 0, :db => 'widgets', :table => 'user', :index_name => 'id_created', :columns => 'user_name'}
+
+      d = c.open_index(idx)
+      d.callback do |s|
+
+        d = c.query(:id => 0, :op => '>=', :key => ['2', '2010-01-03'])
+        d.errback { fail }
+        d.callback do |data|
+          data.should == ['Bob']
+          EM.stop
+        end
+      end
+    }
+  end
+
 end

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    em-handlersocket (0.0.1)
+    em-handlersocket (0.1.0)
       eventmachine
 
 GEM

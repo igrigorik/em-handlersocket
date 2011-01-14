@@ -47,7 +47,7 @@ module EventMachine
       end
 
       def query(*queries)
-        execute(queries.map{|q| [q[:id], q[:op], 1, q[:key], q[:limit], q[:offset]].compact })
+        execute(queries.map{|q| [q[:id], q[:op], q[:key].size, q[:key], q[:limit], q[:offset]].compact })
       end
 
       def execute(cmd, &blk)
