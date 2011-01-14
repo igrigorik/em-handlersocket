@@ -1,8 +1,8 @@
 # EM-HandlerSocket
 
-Experimental client for HandlerSocket MySQL plugin for direct read/write of InnoDB tables. This plugin bypasses any/all SQL parsing, query planner, and other MySQL locks, while giving you the advantage of InnoDB persistence, speed, and the network daemon!
+EventMachine client for HandlerSocket MySQL plugin for direct read/write of InnoDB tables. This plugin bypasses any/all SQL parsing, query planner, and other MySQL locks, while giving you the advantage of InnoDB persistence, speed, and the network daemon! Best of all, HandlerSocket plugin runs alongside your regular MySQL engine, which means you still have the full advantage of a SQL console at your disposal.
 
-Best of all, HandlerSocket plugin runs alongside your regular MySQL engine, which means you still have the full advantage of a SQL console at your disposal.
+[HandlerSocket: The NoSQL MySQL & Ruby](http://www.igvita.com/2011/01/14/handlersocket-the-nosql-mysql-ruby/)
 
 ## Features
 
