@@ -38,11 +38,19 @@ describe EventMachine::HandlerSocket do
     EM.run {
       c = EM::HandlerSocket.new
 
-      df = c.execute(['P', '0', 'widgets', 'user', 'PRIMARY', 'user_name,user_email,created'])
-      df.callback {|r|
-        r.should == ['0', '1']
-        EM.stop
-      }
+      df = c.execute([['P', '0', 'widgets', 'user', 'PRIMARY', 'user_name,user_email,created']])
+      df.callback { EM.stop }
+      df.errback { fail }
+    }
+  end
+
+  it "should invoke errback on bad query" do
+    EM.run {
+      c = EM::HandlerSocket.new
+
+      df = c.execute([['P', '0', 'badDB', 'user', 'PRIMARY', 'user_name,user_email,created']])
+      df.callback { fail }
+      df.errback { EM.stop }
     }
   end
 
@@ -64,11 +72,11 @@ describe EventMachine::HandlerSocket do
       idx = {:id => 0, :db => 'widgets', :table => 'user', :index_name => 'PRIMARY', :columns => 'user_name'}
 
       d = c.open_index(idx)
-      d.callback do |s|
+      d.callback do
 
         d = c.query(:id => 0, :op => '=', :key => '1')
         d.callback do |data|
-          data.last.should == 'Ilya'
+          data.should == ['Ilya']
           EM.stop
         end
       end
@@ -76,8 +84,6 @@ describe EventMachine::HandlerSocket do
   end
 
   it "should fetch multiple records" do
-    pending("trickier one.. response is returned on multiple lines, requires DF accounting")
-
     EM.run {
       c = EM::HandlerSocket.new
       idx = {:id => 0, :db => 'widgets', :table => 'user', :index_name => 'PRIMARY', :columns => 'user_name'}
@@ -86,13 +92,13 @@ describe EventMachine::HandlerSocket do
       d.callback do |s|
 
         d = c.query({:id => 0, :op => '=', :key => '1'}, {:id => 0, :op => '=', :key => '2'})
+        d.errback { fail }
         d.callback do |data|
-          p data
+          data.should == ['Ilya', 'John']
           EM.stop
         end
       end
     }
   end
-
 
 end

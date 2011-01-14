@@ -1,7 +1,36 @@
 module EventMachine
   module HandlerSocket
-    class Client < EventMachine::Connection
 
+    class Deferrable < EM::DefaultDeferrable
+      attr_accessor :lines, :buffer
+
+      def initialize(lines)
+        @lines = lines
+        @buffer = []
+      end
+
+      def recieve(line)
+        status, cols, data = line.chomp.split("\t")
+        @buffer.push data
+
+        # non-zero response code indicates error
+        if status.to_i != 0
+          fail
+          return true
+        end
+
+        done?
+      end
+
+      # non zero response code, or we've processed all lines
+      def done?; (@buffer.size == @lines); end
+
+      def succeed
+        super(@buffer)
+      end
+    end
+
+    class Client < EventMachine::Connection
       include EventMachine::Deferrable
       include EventMachine::Protocols::LineProtocol
 
@@ -13,33 +42,33 @@ module EventMachine
         succeed
       end
 
-      def execute(*cmd, &blk)
-        callback { send(cmd) }
-        add_deferrable(&blk)
-      end
-
       def open_index(opts)
-        execute(['P', opts[:id], opts[:db], opts[:table], opts[:index_name], opts[:columns]])
+        execute([['P', opts[:id], opts[:db], opts[:table], opts[:index_name], opts[:columns]]])
       end
 
       def query(*queries)
-        queries = queries.map{|q| [q[:id], q[:op], 1, q[:key], q[:limit], q[:offset]].compact.join("\t") }.join("\n")
-        execute(queries)
+        execute(queries.map{|q| [q[:id], q[:op], 1, q[:key], q[:limit], q[:offset]].compact })
+      end
+
+      def execute(cmd, &blk)
+        callback { send(cmd) }
+        add_deferrable(cmd.size, &blk)
       end
 
       private
 
         def send(data)
-          data = data.is_a?(String) ? data : data.join("\t") + "\n"
-          send_data data
+          send_data data.map {|d| d.join("\t")}.join("\n") + "\n"
         end
 
         def receive_line(line)
-          @deferrables.shift.succeed(line.chomp.split("\t"))
+          if @deferrables.first.recieve(line)
+            @deferrables.shift.succeed
+          end
         end
 
-        def add_deferrable(&blk)
-          df = EM::DefaultDeferrable.new
+        def add_deferrable(lines, &blk)
+          df = Deferrable.new(lines)
           df.callback &blk
 
           @deferrables.push(df)
