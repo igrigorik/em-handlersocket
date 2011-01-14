@@ -4,12 +4,12 @@ require "em-handlersocket/version"
 
 Gem::Specification.new do |s|
   s.name        = "em-handlersocket"
-  s.version     = Em::Handlersocket::VERSION
+  s.version     = EventMachine::HandlerSocket::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Ilya Grigorik"]
   s.email       = ["ilya@igvita.com"]
   s.homepage    = "http://github.com/igrigorik/em-handlersocket"
-  s.summary     = "EventMachine HandlerSocket MySQL plugin for direct read/write of InnoDB tables"
+  s.summary     = "Asynchronous (EventMachine) HandlerSocket client"
   s.description = s.summary
 
   s.rubyforge_project = "em-handlersocket"

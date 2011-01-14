@@ -1,5 +1,5 @@
-module Em
-  module Handlersocket
-    VERSION = "0.0.1"
+module EventMachine
+  module HandlerSocket
+    VERSION = "0.1.0"
   end
 end
