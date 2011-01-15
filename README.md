@@ -7,6 +7,7 @@ EventMachine client for HandlerSocket MySQL plugin for direct read/write of Inno
 ## Features
 
 - Plays nicely with the (EventMachine) reactor
+- Find, Multi-find, Insert, Update, Delete support
 - No native extensions
 - Pipelined processing
 
@@ -28,10 +29,6 @@ Open the PRIMARY key index on the widgets.user InnoDB table, and query for id ==
         end
       end
     }
-
-## Todo
-
-- Add support for insert/update/delete
 
 ## Resources
 

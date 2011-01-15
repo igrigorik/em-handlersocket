@@ -58,6 +58,10 @@ module EventMachine
         execute([[q[:id], q[:op], q[:key].size, q[:key], (q[:limit] || 1), (q[:offset] || 0), 'D']])
       end
 
+      def update(q)
+        execute([[q[:id], q[:op], q[:key].size, q[:key], (q[:limit] || 1), (q[:offset] || 0), 'U', q[:data]]])
+      end
+
       def execute(cmd, &blk)
         callback { send(cmd) }
         add_deferrable(cmd.size, &blk)

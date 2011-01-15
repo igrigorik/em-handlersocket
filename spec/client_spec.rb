@@ -129,9 +129,17 @@ describe EventMachine::HandlerSocket do
         d = c.insert(:id => 0, :data => ['Bobby'])
         d.errback { fail }
         d.callback {
-          d = c.delete(:id => 0, :op => '=', :key => ['0'])
+
+          d = c.update(:id => 0, :op => '=', :key => ['0'], :data => 'Andrew')
           d.errback { fail }
-          d.callback { EM.stop }
+          d.callback do |n|
+            n.should == ["1"]
+
+            d = c.delete(:id => 0, :op => '=', :key => ['0'])
+            d.errback { fail }
+            d.callback { EM.stop }
+          end
+
         }
       end
     }
