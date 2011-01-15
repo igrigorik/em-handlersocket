@@ -50,6 +50,10 @@ module EventMachine
         execute(queries.map{|q| [q[:id], q[:op], q[:key].size, q[:key], q[:limit], q[:offset]].compact })
       end
 
+      def insert(opts)
+        execute([[opts[:id], '+', opts[:data].size, opts[:data]]])
+      end
+
       def execute(cmd, &blk)
         callback { send(cmd) }
         add_deferrable(cmd.size, &blk)

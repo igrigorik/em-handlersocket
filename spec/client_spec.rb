@@ -107,7 +107,7 @@ describe EventMachine::HandlerSocket do
       idx = {:id => 0, :db => 'widgets', :table => 'user', :index_name => 'id_created', :columns => 'user_name'}
 
       d = c.open_index(idx)
-      d.callback do |s|
+      d.callback do
 
         d = c.query(:id => 0, :op => '>=', :key => ['2', '2010-01-03'])
         d.errback { fail }
@@ -115,6 +115,20 @@ describe EventMachine::HandlerSocket do
           data.should == ['Bob']
           EM.stop
         end
+      end
+    }
+  end
+
+  it "should insert a new record" do
+    EM.run {
+      c = EM::HandlerSocket.new(:port => 9999)
+      idx = {:id => 0, :db => 'widgets', :table => 'user', :index_name => 'id_created', :columns => 'user_name'}
+
+      d = c.open_index(idx)
+      d.callback do
+        d = c.insert(:id => 0, :data => ['Bobby'])
+        d.errback { fail }
+        d.callback { EM.stop }
       end
     }
   end
