@@ -119,16 +119,20 @@ describe EventMachine::HandlerSocket do
     }
   end
 
-  it "should insert a new record" do
+  it "should insert, delete a new record" do
     EM.run {
       c = EM::HandlerSocket.new(:port => 9999)
-      idx = {:id => 0, :db => 'widgets', :table => 'user', :index_name => 'id_created', :columns => 'user_name'}
+      idx = {:id => 0, :db => 'widgets', :table => 'user', :index_name => 'PRIMARY', :columns => 'user_name'}
 
       d = c.open_index(idx)
       d.callback do
         d = c.insert(:id => 0, :data => ['Bobby'])
         d.errback { fail }
-        d.callback { EM.stop }
+        d.callback {
+          d = c.delete(:id => 0, :op => '=', :key => ['0'])
+          d.errback { fail }
+          d.callback { EM.stop }
+        }
       end
     }
   end

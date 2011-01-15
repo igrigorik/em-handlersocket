@@ -46,12 +46,16 @@ module EventMachine
         execute([['P', opts[:id], opts[:db], opts[:table], opts[:index_name], opts[:columns]]])
       end
 
-      def query(*queries)
-        execute(queries.map{|q| [q[:id], q[:op], q[:key].size, q[:key], q[:limit], q[:offset]].compact })
+      def query(*qu)
+        execute(qu.map{|q| [q[:id], q[:op], q[:key].size, q[:key], q[:limit], q[:offset]].compact })
       end
 
       def insert(opts)
         execute([[opts[:id], '+', opts[:data].size, opts[:data]]])
+      end
+
+      def delete(q)
+        execute([[q[:id], q[:op], q[:key].size, q[:key], (q[:limit] || 1), (q[:offset] || 0), 'D']])
       end
 
       def execute(cmd, &blk)
@@ -60,7 +64,6 @@ module EventMachine
       end
 
       private
-
         def send(data)
           send_data data.map {|d| d.join("\t")}.join("\n") + "\n"
         end
